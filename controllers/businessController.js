@@ -27,7 +27,7 @@ const getBusinessData = (req, res) => {
 
 const regenerateHeadline = (req, res) => {
     try{
-        const {name, location} = req.body;
+        const {name, location} = req.query;
 
         if(!name || !location){
             res.status(400).json({error: 'Name and location are required'})
