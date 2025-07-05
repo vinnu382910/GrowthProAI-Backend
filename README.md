@@ -1,6 +1,6 @@
 # 🚀 GrowthProAI – Backend API
 
-This is the backend API for the **Mini Local Business Dashboard**, built as part of the Full Stack Intern Assignment for **GrowthProAI**. It simulates how local businesses might view their Google-like reviews and AI-generated SEO headlines.
+This is the backend API for the **Mini Local Business Dashboard**, built for the **Full Stack Intern Assignment** at **GrowthProAI**. It mimics how local businesses could retrieve customer insights like Google-like ratings, reviews, and AI-generated SEO headlines.
 
 ---
 
@@ -10,6 +10,8 @@ This is the backend API for the **Mini Local Business Dashboard**, built as part
 - **Express.js**
 - **CORS**
 - **dotenv**
+- **Cohere AI** (for headline generation)
+- No Database – Simulated values only
 
 ---
 
@@ -18,12 +20,12 @@ This is the backend API for the **Mini Local Business Dashboard**, built as part
 ```
 
 growthproai-backend/
-├── controllers/           # Route logic (businessController.js)
-├── routes/                # API route definitions (businessRoutes.js)
-├── utils/                 # Helper functions (generators.js)
-├── app.js                 # Express app setup
-├── server.js              # Server entry point
-├── .env                   # Environment variables
+├── controllers/             # Route logic (businessController.js)
+├── routes/                  # API route definitions (businessRoutes.js)
+├── utils/                   # Helper functions (generators.js, generateAIHeadline.js)
+├── app.js                   # Express app setup
+├── server.js                # Entry point
+├── .env                     # Environment variables (not committed)
 ├── .gitignore
 ├── package.json
 └── README.md
@@ -32,7 +34,7 @@ growthproai-backend/
 
 ---
 
-## ⚙️ Setup Instructions (Local)
+## ⚙️ Local Setup Instructions
 
 ### 1. Clone the Repository
 
@@ -53,31 +55,28 @@ npm install
 touch .env
 ```
 
-Inside `.env`:
+Inside `.env`, add:
 
-```
+```env
 PORT=5000
+COHERE_API_KEY=your_actual_api_key_here
 ```
+
+**Note**: Your `.env` is already listed in `.gitignore`, so your keys are safe from GitHub.
 
 ### 4. Run the Server
 
-#### For development with live reload:
-
 ```bash
-npm run dev
-```
-
-#### For production:
-
-```bash
-npm start
+npm run dev   # For development with nodemon
+# or
+npm start     # For production
 ```
 
 ---
 
-## 🌐 Deployed API URL
+## 🌐 Deployed API
 
-> 🟢 The backend is live at:
+> 🟢 Base URL:
 
 ```
 https://growthproai-backend.onrender.com
@@ -89,13 +88,15 @@ https://growthproai-backend.onrender.com
 
 ### 1. **POST** `/api/business-data`
 
+> Returns mock review data + a static headline template.
+
 **Full URL:**
 
 ```
 https://growthproai-backend.onrender.com/api/business-data
 ```
 
-**Request Body (JSON):**
+#### ✅ Request Body (JSON):
 
 ```json
 {
@@ -104,7 +105,7 @@ https://growthproai-backend.onrender.com/api/business-data
 }
 ```
 
-**Response:**
+#### ✅ Response:
 
 ```json
 {
@@ -114,9 +115,14 @@ https://growthproai-backend.onrender.com/api/business-data
 }
 ```
 
+* The `headline` here is **template-based**, not AI-generated.
+* Ideal for initial page load or performance-favoring use cases.
+
 ---
 
 ### 2. **GET** `/api/regenerate-headline?name=...&location=...`
+
+> Regenerates SEO headline using **Cohere AI**.
 
 **Full URL Example:**
 
@@ -124,17 +130,30 @@ https://growthproai-backend.onrender.com/api/business-data
 https://growthproai-backend.onrender.com/api/regenerate-headline?name=Cake%20&%20Co&location=Mumbai
 ```
 
-**Response:**
+#### ✅ Response:
 
 ```json
 {
-  "headline": "Customers Love Cake & Co in Mumbai – Rated #1 in 2025"
+  "headline": "Delight in Every Bite – Discover Cake & Co in Mumbai Today!"
 }
 ```
 
+* This endpoint uses **Cohere's Command model** for dynamic, human-like text generation.
+* Headline varies with each request (depending on temperature/randomness).
+* Best for interactive UI buttons like "Regenerate SEO Headline".
+
 ---
 
-## 🔧 Scripts in `package.json`
+## 🔍 Difference Between Endpoints
+
+| Endpoint                   | Purpose                          | Headline Source          | Use Case                      |
+| -------------------------- | -------------------------------- | ------------------------ | ----------------------------- |
+| `/api/business-data`       | Return initial data and headline | Static Template Function | Fast, default homepage load   |
+| `/api/regenerate-headline` | Return fresh SEO headline via AI | Cohere AI (dynamic)      | Button-triggered regeneration |
+
+---
+
+## 🔧 package.json Scripts
 
 ```json
 "scripts": {
@@ -145,23 +164,50 @@ https://growthproai-backend.onrender.com/api/regenerate-headline?name=Cake%20&%2
 
 ---
 
-## ✨ Features
+## 🔐 Security
 
-* 🔁 No database – fully simulated dynamic responses
-* 🧠 Smart, AI-style SEO headline generation from static templates
-* 📦 Modular Express structure (controllers, routes, utils)
-* 🌍 CORS-enabled – ready for React frontend integration
+* `.env` is ignored via `.gitignore`
+* `COHERE_API_KEY` is stored securely
+* No secrets or credentials are exposed in GitHub or frontend
 
 ---
 
-## 📬 Submission
+## ✨ Features
+
+* 🔁 No database – fully simulated data
+* ⚙️ Modular Express app with separate routes/controllers
+* 🧠 AI headline generation via Cohere
+* 📦 Easy to integrate with React frontend
+* ✅ Clean error handling and response formats
+
+---
+
+## 🧪 Sample CURL Requests
+
+### Get Business Data
+
+```bash
+curl -X POST https://growthproai-backend.onrender.com/api/business-data \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Burger King", "location": "Hyderabad"}'
+```
+
+### Regenerate SEO Headline
+
+```bash
+curl "https://growthproai-backend.onrender.com/api/regenerate-headline?name=Burger%20King&location=Hyderabad"
+```
+
+---
+
+## 📬 Submission Details
 
 * **Author:** Vinay Kalva
-* **Assignment:** Full Stack Intern Task – GrowthProAI
-* **Backend Deployment:** ✅ [View API Live](https://growthproai-backend.onrender.com)
+* **Project:** GrowthProAI Full Stack Internship Task
+* **Backend Deployment:** ✅ [Live API](https://growthproai-backend.onrender.com)
 
 ---
 
 ## 📄 License
 
-This project is for assignment/demo purposes only and not intended for production use.
+This codebase is for learning/demo purposes only and not meant for production without modification.
