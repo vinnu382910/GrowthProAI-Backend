@@ -1,4 +1,5 @@
 const {  getRandomRating, getRandomReviews, generateHeadline} = require('../utils/generators');
+const generateAIHeadline = require("../utils/generateAIHeadline");
 
 const getBusinessData = (req, res) => {
     try {
@@ -25,7 +26,7 @@ const getBusinessData = (req, res) => {
     }
 }
 
-const regenerateHeadline = (req, res) => {
+const regenerateHeadline = async (req, res) => {
     try{
         const {name, location} = req.query;
 
@@ -37,10 +38,10 @@ const regenerateHeadline = (req, res) => {
             return res.status(400).json({error: 'Name and location must be a string'})
         }
 
-        const headline = generateHeadline(name, location);
-
-        res.json({headline});
+        const headline = await generateAIHeadline(name, location); // ✅ await added
+        res.json({ headline });
     } catch (error) {
+        console.log("Error Raised", error)
         res.status(500).json({ error: 'Server Error' });
     }
 }
